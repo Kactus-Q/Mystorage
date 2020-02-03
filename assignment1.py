@@ -9,7 +9,8 @@ def ytm(p,t,coupon,n):
         yield11 = yield11 + 0.0000001
     return yield11
 
-def ytm1(p,t,coupon,n):    #for bond 11 only
+def ytm1(p,t,coupon,n):    #for bond 11 only note that the issue date of bond11 is 10/11/2019, this date is later than 9/1/2019, 
+                            # so the date used for accrued interest will be different from other bonds
     yield11 = 0.0000001
     while abs(p + coupon * 100 * (141-t)/365 - ((coupon * 100 / yield11 * (1-(1/((1+yield11/2)**n))) + 100/((1+yield11/2)**n))*((1+yield11/2)**((182-t)/182.5)))) >= 0.0001:
         yield11 = yield11 + 0.0000001
@@ -97,7 +98,8 @@ def spotrate(pv,fv,t):
 
     return spot
 
-def spotrateforbond7and9(pv,fv,t,lastspot,coupon):
+def spotrateforbond7and9(pv,fv,t,lastspot,coupon):  # for bond7 and bond9 only. Need to linear interpolate the spot rate
+                                                    # used for coupon on 9/1. 
     spot = 0.0000001
     spot_for_last_coupon = round(np.interp(92,[0,273],[lastspot,spot]),7)
     while fv - ((pv-(coupon/2)/((1+spot_for_last_coupon/2)**((t+92)/182.5))) * ((1+spot/2)**((t+273)/182.5)))>= 0.0001:
@@ -323,7 +325,7 @@ if __name__ == '__main__':
     fg[2].set_ylabel('Interest Rate')
     plt.show()
 
-    # calculate covariance matrix for log-return of yield
+    # calculate covariance matrix for log-return of yield & forward 
     ret_list = [[],[],[],[],[]]
     for i in range(5):
         for j in range(9):
@@ -341,6 +343,7 @@ if __name__ == '__main__':
     print(cov1)
     print(cov2)
 
+    # calculate eigenvalues and eigenvectors. 
     eigval1,eigvec1 = np.linalg.eig(cov1)
     eigval2,eigvec2 = np.linalg.eig(cov2)
     print(eigval1)
